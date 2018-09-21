@@ -55,5 +55,5 @@ MongoClient.connect('mongodb://localhost:27017/', (err, client) => {
 
 
     //closes the connection to mongodb server
-    client.close();  //Close only after promise completed - FIXME!
+    client.close();  //Close only after promise completed - FIXME !
 });
