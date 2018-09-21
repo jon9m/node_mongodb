@@ -1,4 +1,12 @@
-const MongoClient = require('mongodb').MongoClient;
+// const MongoClient = require('mongodb').MongoClient;
+
+//Using objcet destructuring
+const { MongoClient, ObjectID } = require('mongodb');
+//ObjectID will create new IDs on th fly
+// var obj = new ObjectID();
+// console.log(obj);
+
+
 
 MongoClient.connect('mongodb://localhost:27017/', (err, client) => {
     //failure    
