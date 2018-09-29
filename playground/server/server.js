@@ -152,8 +152,14 @@ expressApp.post('/users', (req, resp) => {
     newUser.save()
         .then((user) => {
             console.log('Saved !', user);
-            resp.send(user);
+
+            return newUser.generateAuthToken();
+
+            // resp.send(user);
             //mongoose.disconnect();  //TODO
+        }).then(token => {
+            //x-auth is custom header
+            resp.header('x-auth', token).send(newUser);
         })
         .catch(err => {
             console.log('Error saving', err);
