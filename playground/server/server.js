@@ -1,3 +1,17 @@
+var env = process.env.NODE_ENV || 'development';
+if (env === 'development') {
+    process.env.PORT = 3000;
+    process.env.URI = 'localhost';
+} else if (env === 'test') {
+    process.env.PORT = 3000;
+    process.env.URI = 'localhost';
+} else {
+    process.env.PORT = 3000;
+    process.env.URI = 'localhost';
+}
+
+const port = process.env.PORT;
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -121,12 +135,12 @@ expressApp.patch('/todos/:id', (req, resp) => {
             }
         }).catch(err => {
             resp.status(400).send(e);
-        }); 
+        });
     } else {
         resp.status(400).send("Invalid ID");
     }
 });
 
-expressApp.listen(3000, () => {
+expressApp.listen(port, () => {
     console.log("Started on port 3000");
 });
