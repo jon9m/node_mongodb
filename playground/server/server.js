@@ -61,6 +61,40 @@ expressApp.get('/todos/:id', (req, resp) => {
     }
 });
 
+//Delete all
+expressApp.delete('/todos', (req, resp) => {
+    var id = req.params.id;
+
+    Todo.deleteMany().then(todo => {
+        if (todo) {
+            resp.send(todo);
+        } else {
+            resp.send({});
+        }
+    }).catch(err => {
+        resp.status(400).send(e);
+    });
+});
+
+//Delete by id
+expressApp.delete('/todos/:id', (req, resp) => {
+    var id = req.params.id;
+
+    if (ObjectID.isValid(id)) {
+        Todo.findByIdAndDelete(id).then(todo => {
+            if (todo) {
+                resp.send(todo);
+            } else {
+                resp.send({});
+            }
+        }).catch(err => {
+            resp.status(400).send(e);
+        });
+    } else {
+        resp.status(400).send("Invalid ID");
+    }
+});
+
 expressApp.listen(3000, () => {
     console.log("Started on port 3000");
 });
