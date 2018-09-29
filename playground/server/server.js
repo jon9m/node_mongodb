@@ -19,6 +19,7 @@ const { ObjectID } = require('mongodb');
 
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./model/todo');
+var { User } = require('./model/user');
 
 var expressApp = express();
 
@@ -139,6 +140,25 @@ expressApp.patch('/todos/:id', (req, resp) => {
     } else {
         resp.status(400).send("Invalid ID");
     }
+});
+
+// ------------------------------------------------
+expressApp.post('/users', (req, resp) => {
+
+    var body = _.pick(req.body, ['email', 'password']);
+    var newUser = new User(body);
+
+    //Save to DB
+    newUser.save()
+        .then((user) => {
+            console.log('Saved !', user);
+            resp.send(user);
+            //mongoose.disconnect();  //TODO
+        })
+        .catch(err => {
+            console.log('Error saving', err);
+            resp.status(400).send(err);
+        });
 });
 
 expressApp.listen(port, () => {
