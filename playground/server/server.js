@@ -20,6 +20,7 @@ const { ObjectID } = require('mongodb');
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./model/todo');
 var { User } = require('./model/user');
+var { authenticate } = require('./middleware/authenticate');
 
 var expressApp = express();
 
@@ -165,6 +166,41 @@ expressApp.post('/users', (req, resp) => {
             console.log('Error saving', err);
             resp.status(400).send(err);
         });
+});
+
+//Middleware
+// var authenticate = (req, resp, next) => {
+//     var token = req.header('x-auth');
+
+//     User.findByToken(token)
+//         .then(user => {
+//             if (user) {
+//                 req.user = uer;
+//                 req.token = tiken;
+//                 next();
+//             } else {
+//                 return Promise.reject();
+//             }
+//         }).catch(err => {
+//             resp.status(401).send(err);
+//         });
+// }
+
+expressApp.get('/users/me', authenticate, (req, resp) => {
+    // var token = req.header('x-auth');
+
+    // User.findByToken(token)
+    //     .then(user => {
+    //         if (user) {
+    //             resp.send(user);
+    //         } else {
+    //             return Promise.reject();
+    //         }
+    //     }).catch(err => {
+    //         resp.status(401).send(err);
+    //     });
+
+    resp.send(req.user);
 });
 
 expressApp.listen(port, () => {
