@@ -1,5 +1,6 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
 const { ObjectID } = require('mongodb');
 
 var { mongoose } = require('./db/mongoose');
@@ -90,6 +91,37 @@ expressApp.delete('/todos/:id', (req, resp) => {
         }).catch(err => {
             resp.status(400).send(e);
         });
+    } else {
+        resp.status(400).send("Invalid ID");
+    }
+});
+
+//Update
+expressApp.patch('/todos/:id', (req, resp) => {
+    var id = req.params.id;
+
+    //Only accept text and completed values from the req values passed
+    var body = _.pick(req.body, ['text', 'completed']);
+
+    if (ObjectID.isValid(id)) {
+
+        if (_.isBoolean(body.completed) && body.completed) {
+            body.completedAt = new Date().getTime();
+        } else {
+            body.completed = false;
+            body.completedAt = null;
+        }
+
+        //new same as return Original false
+        Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then(todo => {
+            if (todo) {
+                resp.send(todo);
+            } else {
+                resp.status(400).send();
+            }
+        }).catch(err => {
+            resp.status(400).send(e);
+        }); 
     } else {
         resp.status(400).send("Invalid ID");
     }
