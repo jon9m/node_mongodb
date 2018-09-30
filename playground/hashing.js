@@ -41,10 +41,21 @@ console.log(`jsonwebtoken ${jsonwebtoken}`);
 var decodedtoken = jwt.verify(jsonwebtoken, 'some_salt');
 console.log(`decodedtoken ${JSON.stringify(decodedtoken)}`);
 
+// ---------------Using bcryptjs----------------
+const bcrypt = require('bcryptjs');
 
+var password = '123abc!';
+var salt = bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(password, salt, (err, hash) => {
+        console.log(hash);
+    });
+});
 
+var hashedpassword = '$2a$10$27Hah1SnfT3yzM0AvhjNTOknh1CNXYMtH45wS1UQTYDUmU5S.ZaEu';
 
-
+bcrypt.compare(password, hashedpassword, (err, result) => {
+    console.log(result);
+});
 
 
 
