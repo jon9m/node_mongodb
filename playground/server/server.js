@@ -184,6 +184,7 @@ expressApp.post('/users/login', (req, resp) => {
         });
 });
 
+
 //Middleware
 // var authenticate = (req, resp, next) => {
 //     var token = req.header('x-auth');
@@ -217,6 +218,16 @@ expressApp.get('/users/me', authenticate, (req, resp) => {
     //     });
 
     resp.send(req.user);
+});
+
+//Delete token
+expressApp.delete('/users/me/token', authenticate, (req, resp) => {
+    console.log(req.token);
+    req.user.removeToken(req.token).then(result => {
+        resp.status(200).send();
+    }, err => {
+        resp.status(400).send();
+    })
 });
 
 expressApp.listen(port, () => {

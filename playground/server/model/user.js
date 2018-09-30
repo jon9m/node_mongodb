@@ -112,6 +112,18 @@ UserSchema.statics.findByCredentials = function (email, password) {
     });
 };
 
+UserSchema.methods.removeToken = function (token) {
+    //$pull lets you remove items from an array matches certain criteria
+    var user = this;
+    return user.update({
+        $pull: {
+            tokens: {
+                token: token  //if token matches 'entire object' contanning the token is removed
+            }
+        }
+    });
+}
+
 //pre post hooks - middleware
 UserSchema.pre('save', function (next) {
     var user = this;
