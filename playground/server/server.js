@@ -28,10 +28,11 @@ var expressApp = express();
 expressApp.use(bodyParser.json());
 
 //Create
-expressApp.post('/todos', (req, resp) => {
+expressApp.post('/todos', authenticate, (req, resp) => {
     var newTodo = new Todo({
         text: req.body.text,
-        completed: req.body.completed
+        completed: req.body.completed,
+        _creator: req.user._id
     });
     //Save to DB
     newTodo.save()
@@ -51,8 +52,8 @@ expressApp.post('/todos', (req, resp) => {
 
 
 //Get all
-expressApp.get('/todos', (req, resp) => {
-    Todo.find().then(todos => {
+expressApp.get('/todos', authenticate, (req, resp) => {
+    Todo.find({ _creator: req.user._id }).then(todos => {
         resp.send(todos);
     }).catch(err => {
         resp.status(400).send(e);
@@ -60,11 +61,12 @@ expressApp.get('/todos', (req, resp) => {
 });
 
 //Get one
-expressApp.get('/todos/:id', (req, resp) => {
+expressApp.get('/todos/:id', authenticate, (req, resp) => {
     var id = req.params.id;
 
     if (ObjectID.isValid(id)) {
-        Todo.findById(id).then(todo => {
+        // Todo.findById(id).then(todo => {
+        Todo.findOne({ _id: id, _creator: req.user._id }).then(todo => {
             if (todo) {
                 resp.send(todo);
             } else {
@@ -79,10 +81,10 @@ expressApp.get('/todos/:id', (req, resp) => {
 });
 
 //Delete all
-expressApp.delete('/todos', (req, resp) => {
+expressApp.delete('/todos', authenticate, (req, resp) => {
     var id = req.params.id;
 
-    Todo.deleteMany().then(todo => {
+    Todo.deleteMany({ _creator: req.user._id }).then(todo => {
         if (todo) {
             resp.send(todo);
         } else {
@@ -94,11 +96,12 @@ expressApp.delete('/todos', (req, resp) => {
 });
 
 //Delete by id
-expressApp.delete('/todos/:id', (req, resp) => {
+expressApp.delete('/todos/:id', authenticate, (req, resp) => {
     var id = req.params.id;
 
     if (ObjectID.isValid(id)) {
-        Todo.findByIdAndDelete(id).then(todo => {
+        // Todo.findByIdAndDelete(id).then(todo => {
+        Todo.deleteOne({ _id: id, _creator: req.user._id }).then(todo => {
             if (todo) {
                 resp.send(todo);
             } else {
@@ -113,7 +116,7 @@ expressApp.delete('/todos/:id', (req, resp) => {
 });
 
 //Update
-expressApp.patch('/todos/:id', (req, resp) => {
+expressApp.patch('/todos/:id', authenticate, (req, resp) => {
     var id = req.params.id;
 
     //Only accept text and completed values from the req values passed
@@ -129,7 +132,8 @@ expressApp.patch('/todos/:id', (req, resp) => {
         }
 
         //new same as return Original false
-        Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then(todo => {
+        // Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then(todo => {
+        Todo.findOneAndUpdate({ _id: id, _creator: req.user._id }, { $set: body }, { new: true }).then(todo => {
             if (todo) {
                 resp.send(todo);
             } else {
