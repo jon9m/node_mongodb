@@ -168,6 +168,22 @@ expressApp.post('/users', (req, resp) => {
         });
 });
 
+//Login
+expressApp.post('/users/login', (req, resp) => {
+    var body = _.pick(req.body, ['email', 'password']);
+
+    User.findByCredentials(body.email, body.password)
+        .then((user) => {
+            console.log('resolved');
+            return user.generateAuthToken().then(token => {
+                resp.header('x-auth', token).send(user);
+            });
+        }).catch((err) => {
+            console.log('rejected');
+            resp.status(400).send(err);
+        });
+});
+
 //Middleware
 // var authenticate = (req, resp, next) => {
 //     var token = req.header('x-auth');
