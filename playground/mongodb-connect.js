@@ -18,7 +18,7 @@ MongoClient.connect('mongodb://localhost:27017/', (err, client) => {
     console.log("connected to mongodb server");
 
     //will create a new DB if not exist
-    let db = client.db('TodoApp');
+    const db = client.db('TodoApp');
 
     //create a collection and insert new document
     db.collection('Todos').insertOne({
